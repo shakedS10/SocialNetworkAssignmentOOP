@@ -1,7 +1,6 @@
 from Observe import Observer, Observable
+from PIL import Image
 import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
-
 
 class SocialNetwork:
     # The social network class implements the singleton design patterns,
@@ -235,8 +234,9 @@ class ImagePost:
     def display(self):
         # method that displays the image uploaded in this post
         print(f"Shows picture")
-        img = mpimg.imread(self._image)
-        plt.imshow(img)
+        imag = Image.open(self._image)
+        plt.imshow(imag)
+        plt.show()
 
     def getUser(self):
         # method that returns the user uploaded this image
