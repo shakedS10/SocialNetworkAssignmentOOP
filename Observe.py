@@ -19,7 +19,7 @@ class Observer:
 class Observable(ABC):
     # class the implements the observable aspect of a user
     def __init__(self):
-        self._observers = set()
+        self._observers = set()  # a set of all the followers of a user
 
     def attach(self, observer):
         self._observers.add(observer)
@@ -43,5 +43,5 @@ class Observable(ABC):
         u.updatecomment(post, user, text)
 
     def getSet(self):
-        # method that returns a list of all the observers (followers) of the observable (user)
+        # method that returns a set of all the observers (followers) of the observable (user)
         return self._observers
