@@ -196,12 +196,14 @@ class TextPost:
     def like(self, user):
         # method that notifies the user uploaded this post that he got a new like
         self._likes.append(user)
-        self._user.notifylike(self, user)
+        if self._user.getusername != user.getusername:
+            self._user.notifylike(self, user)
 
     def comment(self, user, text):
         # method that notifies the user uploaded this post that he got a new comment
         self._comments.append((user, text))
-        self._user.notifycomment(self, user, text)
+        if self._user.getusername != user.getusername:
+            self._user.notifycomment(self, user, text)
 
     def getUser(self):
         # method that returns the user uploaded this post
@@ -229,7 +231,8 @@ class ImagePost:
     def comment(self, user, text):
         # method that notifies the user uploaded this post that he got a new comment
         self._comments.append((user, text))
-        self._user.notifycomment(self, user, text)
+        if self._user.getusername != user.getusername:
+            self._user.notifycomment(self, user, text)
 
     def display(self):
         # method that displays the image uploaded in this post
@@ -262,12 +265,14 @@ class SalePost:
     def like(self, user):
         # method that notifies the user uploaded this post that he got a new like
         self._likes.append(user)
-        self._user.notifylike(self, user)
+        if self._user.getusername != user.getusername:
+            self._user.notifylike(self, user)
 
     def comment(self, user, text):
         # method that notifies the user uploaded this post that he got a new comment
         self._comments.append((user, text))
-        self._user.notifycomment(self, user, text)
+        if self._user.getusername != user.getusername:
+            self._user.notifycomment(self, user, text)
 
     def discount(self, amount, password):
         # method that updates this sale post with a percentage discount on the price of this product
