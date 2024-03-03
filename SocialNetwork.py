@@ -22,6 +22,7 @@ class SocialNetwork:
         # initiator the gets the name of the social network and initialized it, list of users also being initialized
         self._platform_name = name
         self._users = []
+        self._connected = []
         print(f"The social network {self._platform_name} was created!")  # creation message
 
     def sign_up(self, username, password):
@@ -36,14 +37,18 @@ class SocialNetwork:
             if user.getusername == username:
                 print(f"username already taken")
                 return None
-        u = User(username, password)
+        u = User(username, password, self)
         self._users.append(u)
+        self._connected.append(u)
         return u
 
     def log_in(self, username, password):
         # method that logs a user into the social network if the specified username and password exist
         # in the social network
-
+        for user in self._connected:
+            if user.getusername() == username:
+                print(f"{username} already connected")
+                return user
         for user in self._users:
             if user.getusername() == username and user.getpassword() == password:
                 print(f"{username} connected")
@@ -51,8 +56,15 @@ class SocialNetwork:
         print("Invalid username or password")
 
     def log_out(self, username):
+        for user in self._connected:
+            if user.getusername() == username:
+                self._connected.remove(user)
         # method the prints that the specified user logged out
         print(f"{username} disconnected")
+
+    def getconnected(self):
+        # method that returns a list of all the users connected to the social network
+        return self._connected
 
     def __str__(self):
         # a method that returns textual description about the social network
@@ -72,10 +84,11 @@ class User(Observer, Observable):
     # every user is an observer and an observable, can be notified and can notify others,
     # and that's why the observer design pattern can help with it
 
-    def __init__(self, username, password):
+    def __init__(self, username, password, platform):
         # initialization of a username given a username and a password
 
         super().__init__()
+        self._platform = platform  # the social network the user is part of
         self._username = username
         self._password = password
         self._following = []  # list of the users that this certain user follows
@@ -108,19 +121,26 @@ class User(Observer, Observable):
         print(f"{self._username} unfollowed {uname}")
 
     def publish_post(self, post_type, *args):
-        # a method that gets a post type and the contents of this post and publish it to the social network
-        factory = PostFactory()  # factory instance
-        post = factory.create_post(self, post_type, *args)  # post creation using factory
-        self._posts.append(post)  # insertion of the post to the uploading user's posts list
-        self.notify(post)  # notifies the user's followers about the post upload
-        if post_type == "Text":
-            print(f"{self.getusername()} published a post:\n\"{args[0]}\"\n")
-        elif post_type == "Image":
-            print(f"{self.getusername()} posted a picture\n")
-        elif post_type == "Sale":
-            print(
-                f"{self.getusername()} posted a product for sale:\nFor sale! {args[0]}, price: {args[1]}, pickup from: {args[2]}\n")
-        return post
+        # a method that gets a post type and the contents of this post and publish it to the social network:
+        connected = self._platform.getconnected()  # list of all the users connected to the social network
+        isconnected = False  # a flag that indicates if the user has followers
+        for user in connected:
+            if self.getusername() == user.getusername():
+                isconnected = True
+                break
+        if isconnected == True:
+            factory = PostFactory()  # factory instance
+            post = factory.create_post(self, post_type, *args)  # post creation using factory
+            self._posts.append(post)  # insertion of the post to the uploading user's posts list
+            self.notify(post)  # notifies the user's followers about the post upload
+            if post_type == "Text":
+                print(f"{self.getusername()} published a post:\n\"{args[0]}\"\n")
+            elif post_type == "Image":
+                print(f"{self.getusername()} posted a picture\n")
+            elif post_type == "Sale":
+                print(
+                    f"{self.getusername()} posted a product for sale:\nFor sale! {args[0]}, price: {args[1]}, pickup from: {args[2]}\n")
+            return post
 
     def update(self, post):
         # method that updates the followers notifications list with a new notification about a post
